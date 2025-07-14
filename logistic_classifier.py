@@ -34,7 +34,7 @@ def log_loss(weights: np.ndarray,
                      features: np.ndarray,
                      categories: np.ndarray) -> int:
     predicted_categories = predict(weights, features)
-    log_loss = categories*np.log(predicted_categories) + (1-categories)*np.log(1-predicted_categories)
+    log_loss = categories*np.log(predicted_categories + 1e-15) + (1-categories)*np.log(1-predicted_categories + 1e-15)
     return -log_loss.sum()
 
 
@@ -55,6 +55,7 @@ def logistic_classification(
         categories: np.ndarray,
         step: float, steps: int) -> np.ndarray:
     features_std = features.std(axis=0)
+    features_std = np.where(features_std == 0, 1, features_std)
     features_mean = features.mean(axis=0)
     features = (features-features_mean)/features_std
     features = add_bias(features)
